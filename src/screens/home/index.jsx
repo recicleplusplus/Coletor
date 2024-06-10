@@ -29,7 +29,7 @@ export function Home({}) {
   const navigation = useNavigation();
   const firestore = getFirestore(firebaseApp);
   const {coletorState, coletorDispach} = useContext(ColetorContext)
-  const basedImage                       = require("../../../assets/images/profile.webp");
+  const basedImage                       = require("../../../assets/images/profile2.webp");
   const [image, setImage]                = useState(basedImage);
   const [tarefas, setTarefas]            = useState([]);
   const quantidadeTarefas = tarefas.length;

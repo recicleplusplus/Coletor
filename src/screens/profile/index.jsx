@@ -33,7 +33,7 @@ export function Profile() {
   const [register, setResgister]   = useState(false);
   const [index, setIndex]          = useState(-1);
 
-  const basedImage                       = require("../../../assets/images/profile.webp");
+  const basedImage                       = require("../../../assets/images/profile2.webp");
   const [image, setImage]                = useState(basedImage);
 
   // UseEffect  functions
