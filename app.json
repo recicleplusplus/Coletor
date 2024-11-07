@@ -13,12 +13,6 @@
         }
       ],
       [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsImpl": "maplibre"
-        }
-      ],
-      [
         "expo-location",
         {
           "locationWhenInUsePermission": "Show current location on map."

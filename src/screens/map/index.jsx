@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import MapboxGL from '@rnmapbox/maps'; // Import Mapbox from @rnmapbox/maps
-import { View } from 'react-native';
+import MapView from 'react-native-maps';
+
+import { View, StyleSheet } from 'react-native';
 // import { styles, customMapStyle } from './style';
 import * as Location from 'expo-location';
 import { SimpleIcon } from '../../components/icons';
@@ -13,8 +14,9 @@ import { ButtonIcon } from '../../components/buttons';
 import { RecyclableList } from './components/recyclable_list';
 import { ColetorContext } from '../../contexts/coletor/context';
 
-MapboxGL.setAccessToken('pk.eyJ1IjoicmVjaWNsZXBsdXMiLCJhIjoiY2xvajF5aW1sMWlsdzJycXQxc3NkenkwNCJ9.Qc8tAGWwl65imT225djhLw');
-MapboxGL.setConnected(true);
+// MapboxGL.setAccessToken('pk.eyJ1IjoicmVjaWNsZXBsdXMiLCJhIjoiY2xvajF5aW1sMWlsdzJycXQxc3NkenkwNCJ9.Qc8tAGWwl65imT225djhLw');
+// MapboxGL.setConnected(true);
+// MapLibreGL.setAccessToken(null);
 
 // function Map() {
 //   const [location, setLocation] = useState({
@@ -148,37 +150,45 @@ MapboxGL.setConnected(true);
 // }
 
 
+// const styles = StyleSheet.create({
+//   page: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     backgroundColor: "#F5FCFF"
+//   },
+//   container: {
+//     height: 300,
+//     width: 300,
+//     backgroundColor: "tomato"
+//   },
+//   map: {
+//     flex: 1
+//   }
+// });
+
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF"
-  },
   container: {
-    height: 300,
-    width: 300,
-    backgroundColor: "tomato"
+    flex: 1,
   },
   map: {
-    flex: 1
-  }
+    width: '100%',
+    height: '100%',
+  },
 });
 
-class Map extends Component {
-  componentDidMount() {
-    MapboxGL.setTelemetryEnabled(false);
-  }
-
-  render() {
-    return (
-      <View style={styles.page}>
-        <View style={styles.container}>
-          <MapboxGL.MapView style={styles.map} />
-        </View>
-      </View>
-    );
-  }
+export default function Mapa() {
+  
+  return (
+    <View style={styles.container}>
+      <MapView style={styles.map}
+        initialRegion={{
+          latitude: -22.018040,
+          longitude: -47.891154,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }} 
+      />
+    </View>
+  );
 }
-
-export { Map };

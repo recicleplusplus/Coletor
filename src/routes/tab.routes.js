@@ -8,7 +8,7 @@ const Tab = createBottomTabNavigator();
 
 import { Home }   from "../screens/home"
 import { Profile } from "../screens/profile"
-import { Map } from "../screens/map";
+import Mapa from "../screens/map";
 import { ChatScreen } from "../screens/chat";
 
 function TabsRoutes() {
@@ -39,7 +39,7 @@ function TabsRoutes() {
       />  
       <Tab.Screen 
         name="Mapa" 
-        component={Map} 
+        component={Mapa} 
         options={{
           title: "Mapa",
           tabBarIcon: ({ color }) => ( <SimpleIcon name="road" color={color}  size={Size28} />),
