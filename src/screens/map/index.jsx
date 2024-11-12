@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView from 'react-native-maps';
-import {Marker} from 'react-native-maps';
-
-// import { styles, customMapStyle } from './style';
+import { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { SimpleIcon } from '../../components/icons';
 import { Colors, Theme } from '../../constants/setting';
@@ -14,6 +12,19 @@ import { Error } from '../../components/error';
 import { ButtonIcon } from '../../components/buttons';
 import { RecyclableList } from './components/recyclable_list';
 import { ColetorContext } from '../../contexts/coletor/context';
+
+// Componente otimizado para renderizar marcadores
+const MarkerComponent = React.memo(({ coordinate, status, onPress }) => {
+  return (
+    <Marker coordinate={coordinate} onPress={onPress}>
+      <SimpleIcon
+        name={status === 'pending' ? 'map-marker-account' : 'map-marker-alert'}
+        size={40}
+        color={status === 'pending' ? '#0bbae3' : '#faa05e'}
+      />
+    </Marker>
+  );
+});
 
 export default function Map() {
   const [location, setLocation] = useState({
@@ -32,20 +43,29 @@ export default function Map() {
   const [currentRecyclable, setCurrentRecyclable] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const mapViewRef = useRef(null);  // Ref para o MapView
+
+  // Função para obter a localização atual
   const userLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied');
+      return;
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    setLocation({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      latitudeDelta: 0.0922, // Ajuste conforme a necessidade do zoom
-      longitudeDelta: 0.0421, // Ajuste conforme a necessidade do zoom
-    });
-  }
+    if (
+      location.coords.latitude !== location.latitude ||
+      location.coords.longitude !== location.longitude
+    ) {
+      setLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0922,  // Ajuste conforme a necessidade do zoom
+        longitudeDelta: 0.0421, // Ajuste conforme a necessidade do zoom
+      });
+    }
+  };
 
   function callbackError(error) {
     setError(error);
@@ -56,10 +76,18 @@ export default function Map() {
     setAddRecyclable(true);
   }
 
+  // Chama a função de localização e recupera dados de recicláveis na inicialização
   useEffect(() => {
     userLocation();
     GetRecyclable(setRecyclable);
   }, []);
+
+  // Atualiza a localização no mapa com animação
+  useEffect(() => {
+    if (location.latitude && location.longitude) {
+      mapViewRef.current.animateToRegion(location, 1000); // 1000 ms de animação
+    }
+  }, [location]);
 
   return (
     <View style={styles.container}>
@@ -86,23 +114,26 @@ export default function Map() {
         />
       )}
       <MapView
+        ref={mapViewRef} // Atribui a ref ao MapView
         style={styles.map}
-        region={location} // Usando region para definir a posição e zoom
-        // onRegionChangeComplete={(region) => setLocation(region)} // Atualizar a localização quando o mapa for movido
+        region={location} // Define a região inicial
       >
+        {/* Localizacao do usuario */}
         <Marker coordinate={{ latitude: location.latitude, longitude: location.longitude }}>
           <SimpleIcon name="circle-slice-8" size={30} color="#141ab8" />
         </Marker>
+        
         {Object.entries(recyclable).map(([index, item]) => {
           if (item['status'] === 'done') return null;
 
           return (
-            <Marker
+            <MarkerComponent
               key={index}
               coordinate={{
                 latitude: item['address'].latitude,
                 longitude: item['address'].longitude,
               }}
+              status={item['status']}
               onPress={() => {
                 if (item['status'] === 'pending' || item.collector.id === coletorState.id) {
                   setCurrentRecyclable({
@@ -117,19 +148,7 @@ export default function Map() {
                   });
                 }
               }}
-            >
-              <SimpleIcon
-                name={item['status'] === 'pending' ? 'map-marker-account' : 'map-marker-alert'}
-                size={40}
-                color={
-                  item['status'] === 'pending'
-                    ? '#0bbae3'
-                    : item.collector.id === coletorState.id
-                    ? '#179a02'
-                    : '#faa05e'
-                }
-              />
-            </Marker>
+            />
           );
         })}
       </MapView>
