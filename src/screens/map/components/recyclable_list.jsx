@@ -11,7 +11,6 @@ import { ImageCircleDefault } from '../../../components/images';
 import { http } from '../../../utils/serviceOSRM';
 
 export const RecyclableList = ({ datas, collector, closeList, showRecyclable, currentLocation, setLoading, setError}) => {
-
     const [myRecyclables, setMyRecyclables] = useState([]);
     const [contTime, setContTime] = useState(0); 
     const [kilo, setKilo] = useState(0);
@@ -39,32 +38,30 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
 
     },[datas]);
 
-    // useEffect(() => {
-    //     console.log(myRecyclables);
-    // },[myRecyclables]);
+    useEffect(() => {
+        console.log(JSON.stringify(myRecyclables, null, 2));
+    },[myRecyclables]);
 
     async function generateRoute(){
         setLoading(true);
 
         // Get coordinates of all markers
         let coords = myRecyclables.map((marker) => {
-            if (marker.domain){
                 return [
                     marker.item.address.longitude,
                     marker.item.address.latitude,
-                ];
-            }
-            return null;
+                ];            
         });
     
         // Add current location to beginning of array
         coords.unshift([currentLocation.longitude, currentLocation.latitude]);
     
         // Stringify coordinates to be used in OSRM API
-        const coordsString = coords.map((coord) => coord.join(",")).join(";");
-    
+        const coordsString = coords.filter(coord => coord !== null).map((coord) => coord.join(",")).join(";");
+                
         // OSRM API request
         console.log("Coords:", coords);
+        console.log("CoordsString:", coordsString);
         try{
             let res = await http.get(`trip/v1/car/${coordsString}?annotations=false`);
 
@@ -72,7 +69,8 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
             const sortedWaypoints = await res.data.waypoints.sort(
             (a, b) => a.waypoint_index - b.waypoint_index
             );
-    
+            
+            console.log("SortedWaypoints:", sortedWaypoints);
             // Get only the coordinates of the sorted waypoints and reverse them(lnglat to latlng)
             const sortedCoords = await sortedWaypoints.map((coord) =>
             coord.location.reverse()
@@ -87,17 +85,17 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
     
             // If there are more than 2 waypoints, add them to the URL
             if (sortedCoords.length > 2) {
-            // Remove origin and destination from sortedCoords
-            sortedCoords.pop();
-            sortedCoords.shift();
-    
-            // Prepare waypoints for Google Maps URL
-            const waypoints = sortedCoords
-                .map((coord) => coord.join(","))
-                .join("|");
-    
-            // Add waypoints to Google Maps URL
-            finalUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&waypoints=${waypoints}&destination=${destination}&travelmode=driving&dir_action=navigate`;
+                // Remove origin and destination from sortedCoords
+                sortedCoords.pop();
+                sortedCoords.shift();
+        
+                // Prepare waypoints for Google Maps URL
+                const waypoints = sortedCoords
+                    .map((coord) => coord.join(","))
+                    .join("|");
+        
+                // Add waypoints to Google Maps URL
+                finalUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&waypoints=${waypoints}&destination=${destination}&travelmode=driving&dir_action=navigate`;
             }
     
             // Open Google Maps with sorted route
@@ -177,12 +175,13 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
                             padding={7}
                             radius={8}
                             fun={() => {
-                            if (contTime > 1) generateRoute();
-                            else
-                                setError({
-                                    title: "Rota",
-                                    content: "É necessário que haja pelo menos 2 coletas disponíveis no momento!"
-                                })
+                                generateRoute();
+                            // if (contTime > 1) generateRoute();
+                            // else
+                            //     setError({
+                            //         title: "Rota",
+                            //         content: "É necessário que haja pelo menos 2 coletas disponíveis no momento!"
+                            //     })
                             }}
                         />
                     </View>
