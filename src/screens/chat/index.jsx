@@ -29,12 +29,12 @@ export function ChatScreen({ route }) {
     const unsubscribe = onSnapshot(messagesRef, (snapshot) => {
       const messageList = snapshot.docs
         .map((doc) => ({ ...doc.data(), id: doc.id }))
-        .filter((message) => (message.senderId === coletorState.id && message.recipientId === userId) || (message.recipientId === coletorState.id && message.senderId === userId) )
+        .filter((message) => (message.senderId === coletorState.id && message.recipientId === userId) || (message.recipientId === coletorState.id && message.senderId === userId))
         .sort((a, b) => {
           if (a.timestamp && b.timestamp) {
             return a.timestamp.toMillis() - b.timestamp.toMillis();
           } else if (a.timestamp) {
-            return -1; 
+            return -1;
           } else if (b.timestamp) {
             return 1;
           } else {
@@ -57,7 +57,7 @@ export function ChatScreen({ route }) {
       text: message,
       senderId: user,
       recipientId: userId,
-      timestamp: Timestamp.fromDate(new Date()), 
+      timestamp: Timestamp.fromDate(new Date()),
     };
 
     await addDoc(collection(firestore, 'messages'), newMessage);
@@ -69,7 +69,7 @@ export function ChatScreen({ route }) {
     const isCurrentUser = item.senderId === coletorState.id;
     const containerStyle = isCurrentUser ? styles.currentUserMessageContainer : styles.otherUserMessageContainer;
     const alignDirection = isCurrentUser ? 'flex-end' : 'flex-start';
-  
+
     return (
       <View style={[styles.messageContainer, containerStyle, { alignSelf: alignDirection }]}>
         <View style={styles.messageContent}>
@@ -83,14 +83,16 @@ export function ChatScreen({ route }) {
   return (
     <View style={styles.container}>
       <SizedBox vertical={20} />
-      <Image source={{ uri: userPhotoUrl }}/>
-      <Text>{userName}</Text>
+      <View style={styles.containerDonorProfile}>
+        <Image source={{ uri: userPhotoUrl }}
+          style={styles.donorImage} />
+        <Text style={styles.donorName}>{userName}</Text>
+      </View>
       <FlatList
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.messagesContainer}
-        inverted 
       />
       <View style={styles.inputContainer}>
         <TextInput
