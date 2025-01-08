@@ -60,8 +60,6 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
         const coordsString = coords.filter(coord => coord !== null).map((coord) => coord.join(",")).join(";");
                 
         // OSRM API request
-        console.log("Coords:", coords);
-        console.log("CoordsString:", coordsString);
         try{
             let res = await http.get(`trip/v1/car/${coordsString}?annotations=false`);
 
@@ -70,7 +68,6 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
             (a, b) => a.waypoint_index - b.waypoint_index
             );
             
-            console.log("SortedWaypoints:", sortedWaypoints);
             // Get only the coordinates of the sorted waypoints and reverse them(lnglat to latlng)
             const sortedCoords = await sortedWaypoints.map((coord) =>
             coord.location.reverse()
