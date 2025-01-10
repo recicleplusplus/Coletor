@@ -48,20 +48,20 @@ export const styles = StyleSheet.create({
   },
   messageContainer: {
     flexDirection: 'row',
-    alignItems: 'center', 
-    maxWidth: '80%', 
+    alignItems: 'center',
+    maxWidth: '80%',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    marginVertical: 4, 
+    marginVertical: 4,
   },
   currentUserMessageContainer: {
-    backgroundColor: '#5FC9A7', 
+    backgroundColor: '#5FC9A7',
     alignSelf: 'flex-end',
     borderTopLeftRadius: 20,
   },
   otherUserMessageContainer: {
-    backgroundColor: '#F5A623', 
+    backgroundColor: '#F5A623',
     alignSelf: 'flex-start',
     borderTopRightRadius: 20,
   },
@@ -76,6 +76,20 @@ export const styles = StyleSheet.create({
   timestampText: {
     fontSize: 12,
     color: '#FFFFFF',
-    marginTop: 4, 
+    marginTop: 4,
+  },
+
+  donorName: {
+    fontSize: 20,
+    marginLeft: 12
+  },
+  donorImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 50
+  },
+  containerDonorProfile: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
 });
