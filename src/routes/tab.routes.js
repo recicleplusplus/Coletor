@@ -1,15 +1,17 @@
 import * as React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SimpleIcon } from '../components/icons'
-import { Colors,Theme } from '../constants/setting'
+import { Colors, Theme } from '../constants/setting'
 import { Size28 } from '../constants/scales'
 
 const Tab = createBottomTabNavigator();
 
-import { Home }   from "../screens/home"
+import { Home } from "../screens/home"
 import { Profile } from "../screens/profile"
 import Mapa from "../screens/map";
 import { ChatScreen } from "../screens/chat";
+import { StackCollection } from "./stack.routes";
+
 
 function TabsRoutes() {
   return (
@@ -19,44 +21,44 @@ function TabsRoutes() {
         headerShown: false,
         tabBarActiveTintColor: Colors[Theme][2],
         tabBarInactiveTintColor: Colors[Theme][5],
-        tabBarStyle: { 
+        tabBarStyle: {
           borderTopColor: Colors[Theme][0],
           backgroundColor: Colors[Theme][0],
           opacity: 0.85,
-          height: 55, 
+          height: 55,
           paddingBottom: 8,
           paddingTop: 5,
         },
       }}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={Home} 
+      <Tab.Screen
+        name="Home"
+        component={StackCollection}
         options={{
           title: "Início",
-          tabBarIcon: ({ color }) => ( <SimpleIcon name="recycle" color={color}  size={Size28} />),
+          tabBarIcon: ({ color }) => (<SimpleIcon name="recycle" color={color} size={Size28} />),
         }}
-      />  
-      <Tab.Screen 
-        name="Mapa" 
-        component={Mapa} 
+      />
+      <Tab.Screen
+        name="Mapa"
+        component={Mapa}
         options={{
           title: "Mapa",
-          tabBarIcon: ({ color }) => ( <SimpleIcon name="road" color={color}  size={Size28} />),
+          tabBarIcon: ({ color }) => (<SimpleIcon name="road" color={color} size={Size28} />),
         }}
-      /> 
-      <Tab.Screen 
-        name="Profile" 
-        component={Profile} 
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
         options={{
           title: "Perfil",
           tabBarIcon: ({ color }) => (<SimpleIcon name="account" color={color} size={Size28} />),
         }}
-      />   
+      />
     </Tab.Navigator>
   );
 }
 
 
-export {TabsRoutes};
+export { TabsRoutes };
 
