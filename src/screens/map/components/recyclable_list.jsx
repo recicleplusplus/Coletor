@@ -37,11 +37,7 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
         });
 
     },[datas]);
-
-    useEffect(() => {
-        console.log(JSON.stringify(myRecyclables, null, 2));
-    },[myRecyclables]);
-
+    
     async function generateRoute(){
         setLoading(true);
 
@@ -55,22 +51,22 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
     
         // Add current location to beginning of array
         coords.unshift([currentLocation.longitude, currentLocation.latitude]);
-    
+        
         // Stringify coordinates to be used in OSRM API
-        const coordsString = coords.filter(coord => coord !== null).map((coord) => coord.join(",")).join(";");
+        //const coordsString = coords.filter(coord => coord !== null).map((coord) => coord.join(",")).join(";");
                 
         // OSRM API request
         try{
-            let res = await http.get(`trip/v1/car/${coordsString}?annotations=false`);
-
+            //let res = await http.get(`trip/v1/car/${coordsString}?annotations=false`);
+            
             // Get waypoints from response and sort them by waypoint_index
-            const sortedWaypoints = await res.data.waypoints.sort(
-            (a, b) => a.waypoint_index - b.waypoint_index
-            );
+            // const sortedWaypoints = await res.data.waypoints.sort(
+            // (a, b) => a.waypoint_index - b.waypoint_index
+            // );
             
             // Get only the coordinates of the sorted waypoints and reverse them(lnglat to latlng)
-            const sortedCoords = await sortedWaypoints.map((coord) =>
-            coord.location.reverse()
+            const sortedCoords = coords.map((coord) =>
+            coord.reverse()
             );
     
             // Set origin and destination
