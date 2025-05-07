@@ -106,57 +106,86 @@ export function Home({}) {
     return () => unsubscribe();
   }, []);
 
-  const quantidadetypesA = collectorData.filter((tarefa) => tarefa.types.includes('Plástico')).length;
-  const quantidadetypesB = collectorData.filter((tarefa) => tarefa.types.includes('Metal')).length;
-  const quantidadetypesC = collectorData.filter((tarefa) => tarefa.types.includes('Eletrônico')).length;
-  const quantidadetypesD = collectorData.filter((tarefa) => tarefa.types.includes('Papel')).length;
-  const quantidadetypesE = collectorData.filter((tarefa) => tarefa.types.includes('Óleo')).length;
-  const quantidadetypesF = collectorData.filter((tarefa) => tarefa.types.includes('Vidro')).length;
+  const quantidadeTypesA = collectorData.filter((tarefa) => tarefa.types.includes('Plástico')).length;
+  const quantidadeTypesB = collectorData.filter((tarefa) => tarefa.types.includes('Metal')).length;
+  const quantidadeTypesC = collectorData.filter((tarefa) => tarefa.types.includes('Eletrônico')).length;
+  const quantidadeTypesD = collectorData.filter((tarefa) => tarefa.types.includes('Papel')).length;
+  const quantidadeTypesE = collectorData.filter((tarefa) => tarefa.types.includes('Óleo')).length;
+  const quantidadeTypesF = collectorData.filter((tarefa) => tarefa.types.includes('Vidro')).length;
+  const allTypesAreZero = [quantidadeTypesA, quantidadeTypesB, quantidadeTypesC, quantidadeTypesD, quantidadeTypesE, quantidadeTypesF].every(
+    (quantity) => quantity === 0
+  );
+  
+  // Encontrando o maior valor para normalização
+  const max = Math.max(
+    quantidadeTypesA,
+    quantidadeTypesB,
+    quantidadeTypesC,
+    quantidadeTypesD,
+    quantidadeTypesE,
+    quantidadeTypesF
+  );
 
-  const data2 = [
-    {
-      name: 'Metal',
-      population: quantidadetypesB,
-      color: '#297AB1',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Plástico',
-      population: quantidadetypesA,
-      color: '#F5A623',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Eletrônico',
-      population: quantidadetypesC,
-      color: '#D33F49',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Óleo',
-      population: quantidadetypesE,
-      color: 'green',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Vidro',
-      population: quantidadetypesF,
-      color: 'pink',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Papel',
-      population: quantidadetypesD,
-      color: 'brown',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
+  // Normalizando os valores para calcular as alturas das barras
+  const normalizedA = (quantidadeTypesA / max) * 100;
+  const normalizedB = (quantidadeTypesB / max) * 100;
+  const normalizedC = (quantidadeTypesC / max) * 100;
+  const normalizedD = (quantidadeTypesD / max) * 100;
+  const normalizedE = (quantidadeTypesE / max) * 100;
+  const normalizedF = (quantidadeTypesF / max) * 100;
+
+  const barData = [
+    { height: normalizedA, value: quantidadeTypesA, color: Colors[Theme][2], label: 'Plástico' },
+    { height: normalizedB, value: quantidadeTypesB, color: Colors[Theme][2], label: 'Metal' },
+    { height: normalizedC, value: quantidadeTypesC, color: Colors[Theme][2], label: 'Eletrônico' },
+    { height: normalizedD, value: quantidadeTypesD, color: Colors[Theme][2], label: 'Papel' },
+    { height: normalizedE, value: quantidadeTypesE, color: Colors[Theme][2], label: 'Óleo' },
+    { height: normalizedF, value: quantidadeTypesF, color: Colors[Theme][2], label: 'Vidro' },
   ];
+  // const data2 = [
+  //   {
+  //     name: 'Metal',
+  //     population: quantidadeTypesB,
+  //     color: '#297AB1',
+  //     legendFontColor: '#7F7F7F',
+  //     legendFontSize: 15,
+  //   },
+  //   {
+  //     name: 'Plástico',
+  //     population: quantidadeTypesA,
+  //     color: '#F5A623',
+  //     legendFontColor: '#7F7F7F',
+  //     legendFontSize: 15,
+  //   },
+  //   {
+  //     name: 'Eletrônico',
+  //     population: quantidadeTypesC,
+  //     color: '#D33F49',
+  //     legendFontColor: '#7F7F7F',
+  //     legendFontSize: 15,
+  //   },
+  //   {
+  //     name: 'Óleo',
+  //     population: quantidadeTypesE,
+  //     color: 'green',
+  //     legendFontColor: '#7F7F7F',
+  //     legendFontSize: 15,
+  //   },
+  //   {
+  //     name: 'Vidro',
+  //     population: quantidadeTypesF,
+  //     color: 'pink',
+  //     legendFontColor: '#7F7F7F',
+  //     legendFontSize: 15,
+  //   },
+  //   {
+  //     name: 'Papel',
+  //     population: quantidadeTypesD,
+  //     color: 'brown',
+  //     legendFontColor: '#7F7F7F',
+  //     legendFontSize: 15,
+  //   },
+  // ];
 
   useEffect(()=>{
     setImage(coletorState.photoUrl 
@@ -199,60 +228,69 @@ export function Home({}) {
 
   return (
     <ScrollView>
-        <ImageCircleIcon
-          size={130}
-          sizeIcon={0}
-          align={"flex-start"}
-          img={image}
-          color={Colors[Theme][5]}
-          bgColor={Colors[Theme][0]}
-        />
-       <ContainerTopClean
-         fun={()=>{}}
-         text={"          Bem vind@,\n"+"          "+coletorState.name}
-         icon="information"
-       />
-       <SizedBox vertical={5} />
-       <View style={styles.main}>
-            <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>Avaliação</Text>
-        </View>
-       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <View>
-      <PieChart
-        data={data2}
-        width={350}
-        height={250}
-        chartConfig={chartConfig}
-        accessor="population"
-        backgroundColor="transparent"
-        paddingLeft="20"
-        center={[10, 0]}
-        hasLegend={true}
+      <ImageCircleIcon
+        size={130}
+        sizeIcon={0}
+        align={"flex-start"}
+        img={image}
+        color={Colors[Theme][5]}
+        bgColor={Colors[Theme][0]}
       />
-    </View>
-        </View>
-       <SizedBox vertical={2} />
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>{quantidadeTarefas+" Coletas Concluídas"}</Text>
-        </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ContainerTopClean
+        fun={()=>{}}
+        text={"          Bem vind@,\n"+"          "+coletorState.name}
+        icon="information"
+      />
+      <SizedBox vertical={5} />
+      <View style={styles.main}>
+          <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>Avaliação</Text>
+      </View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <TouchableOpacity style={styles.card}>
+          <View style={{ alignItems: 'center', minHeight: 125, justifyContent: 'center' }}>
+            {allTypesAreZero ? (
+              <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                <Text style={{ color: Colors[Theme][2], textAlign: 'center', padding: 20, fontWeight: 'bold' }}>Não há estatísticas...</Text>
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 10 }}>
+                <View style={styles.barContainer}>
+                  {barData.map((bar, index) => (
+                    <View key={index} style={styles.bar}>
+                      <View style={[styles.barFill, { height: bar.height, backgroundColor: bar.color }]}>
+                        <Text style={styles.barText}>{bar.value}</Text>
+                      </View>
+                      <Text style={styles.legend}>{bar.label}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+      </View>
+      <SizedBox vertical={2} />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>{quantidadeTarefas+" Coletas Concluídas"}</Text>
+      </View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Mapa')}>
           <Text style={styles.text }>Procurar</Text>
         </TouchableOpacity>
+      </View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
+            <Text style={{ color: Colors[Theme][2], textAlign: 'left', padding: 20, fontWeight: 'bold' }}>Histórico</Text>
+      </View>
+      <ScrollView horizontal>
+        {collectorData.map((index, key) => (
+          <View style={[styles.containerEdit, { marginRight: 50 }]} key={key} >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CardHome tipo={index.type} endereco={index.address.name} peso={index.weight} sacolas={index.bags} caixas={index.boxes} foto={index.donor.photoUrl} nome={index.donor.name} id={index.donor.id} key={index} />
             </View>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
-              <Text style={{ color: Colors[Theme][2], textAlign: 'left', padding: 20, fontWeight: 'bold' }}>Histórico</Text>
-            </View>
-            <ScrollView horizontal>
-              {collectorData.map((index, key) => (
-                <View style={[styles.containerEdit, { marginRight: 50 }]} key={key} >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <CardHome tipo={index.type} endereco={index.address.name} peso={index.weight} sacolas={index.bags} caixas={index.boxes} foto={index.donor.photoUrl} nome={index.donor.name} id={index.donor.id} key={index} />
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-            <SizedBox vertical={5} />
-       </ScrollView>
+          </View>
+        ))}
+      </ScrollView>
+      <SizedBox vertical={5} />
+    </ScrollView>
   );
 }
