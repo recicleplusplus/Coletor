@@ -31,9 +31,7 @@ export function Home({}) {
   const {coletorState, coletorDispach} = useContext(ColetorContext)
   const basedImage                       = require("../../../assets/images/profile2.webp");
   const [image, setImage]                = useState(basedImage);
-  const [tarefas, setTarefas]            = useState([]);
-  const quantidadeTarefas = tarefas.length;
-  const tipos = tarefas.map((tarefa) => tarefa.tipo);
+  const [statistics, setStatistics]      = useState(null);
   const database = getDatabase(firebaseApp);
   const [collectorData, setCollectorData] = useState([]);
   const yourCollectorId =  coletorState.id;
@@ -85,26 +83,33 @@ export function Home({}) {
     return tokens;
   }
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(firestore, 'recyclingColetor'), (querySnapshot) => {
-      const tarefas = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        tarefas.push({
-          id: doc.id,
-          tipo: tokenizeString(data.tipo), // Tokenizar a string do tipo
-          caixas: data.caixas,
-          coleta: data.coleta,
-          endereco: data.endereco,
-          observacao: data.observacao,
-          peso: data.data,
-          sacolas: data.sacolas,
-        });
+  async function getColectorStatistics() {
+    const typesWeight = {};
+    collectorData.forEach(item => {
+      const typesArray = item.types.split(',').map(type => type.trim());
+      const weight = parseInt(item.weight.match(/\d+/)[0], 10); // Extrai apenas o número da string "5 KG" e converte para inteiro
+
+      typesArray.forEach(type => {
+        if (typesWeight[type]) {
+          typesWeight[type] += weight;
+        } else {
+          typesWeight[type] = weight;
+        }
       });
-      setTarefas(tarefas);
     });
-    return () => unsubscribe();
-  }, []);
+
+    const statistic = {
+      collectionsCompleted: collectorData.length,
+      eletronicKg: typesWeight["eletronico"] || 0,
+      glassKg: typesWeight["vidro"] || 0,
+      metalKg: typesWeight["metal"] || 0,
+      oilKg: typesWeight["oil"] || 0,
+      paperKg: typesWeight["papel"] || 0,
+      plasticKg: typesWeight["plastico"] || 0
+    };
+
+    return statistic;
+  }
 
   const quantidadeTypesA = collectorData.filter((tarefa) => tarefa.types.includes('Plástico')).length;
   const quantidadeTypesB = collectorData.filter((tarefa) => tarefa.types.includes('Metal')).length;
@@ -142,50 +147,6 @@ export function Home({}) {
     { height: normalizedE, value: quantidadeTypesE, color: Colors[Theme][2], label: 'Óleo' },
     { height: normalizedF, value: quantidadeTypesF, color: Colors[Theme][2], label: 'Vidro' },
   ];
-  // const data2 = [
-  //   {
-  //     name: 'Metal',
-  //     population: quantidadeTypesB,
-  //     color: '#297AB1',
-  //     legendFontColor: '#7F7F7F',
-  //     legendFontSize: 15,
-  //   },
-  //   {
-  //     name: 'Plástico',
-  //     population: quantidadeTypesA,
-  //     color: '#F5A623',
-  //     legendFontColor: '#7F7F7F',
-  //     legendFontSize: 15,
-  //   },
-  //   {
-  //     name: 'Eletrônico',
-  //     population: quantidadeTypesC,
-  //     color: '#D33F49',
-  //     legendFontColor: '#7F7F7F',
-  //     legendFontSize: 15,
-  //   },
-  //   {
-  //     name: 'Óleo',
-  //     population: quantidadeTypesE,
-  //     color: 'green',
-  //     legendFontColor: '#7F7F7F',
-  //     legendFontSize: 15,
-  //   },
-  //   {
-  //     name: 'Vidro',
-  //     population: quantidadeTypesF,
-  //     color: 'pink',
-  //     legendFontColor: '#7F7F7F',
-  //     legendFontSize: 15,
-  //   },
-  //   {
-  //     name: 'Papel',
-  //     population: quantidadeTypesD,
-  //     color: 'brown',
-  //     legendFontColor: '#7F7F7F',
-  //     legendFontSize: 15,
-  //   },
-  // ];
 
   useEffect(()=>{
     setImage(coletorState.photoUrl 
@@ -216,15 +177,15 @@ export function Home({}) {
       coletorDispach({type: Types.UPDATE, data: {...coletorState, photoUrl: error}, dispatch: coletorDispach, cb:updateCB});
     }
   }
-  
-  const chartConfig = {
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-  };
+
+  useEffect(() => {
+    async function fetchStatistics() {
+      const statistic = await getColectorStatistics();
+      console.log(statistic);
+      setStatistics(statistic);
+    }
+    fetchStatistics();
+  }, [collectorData]);
 
   return (
     <ScrollView>
@@ -246,6 +207,11 @@ export function Home({}) {
           <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>Avaliação</Text>
       </View>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ alignItems: 'center', marginBottom: 10 }}>
+          <Text style={{ color: '#B0B0B0', fontSize: 12, textAlign: 'center' }}>
+            Os valores exibidos no gráfico são proporcionais ao maior.
+          </Text>
+        </View>
         <TouchableOpacity style={styles.card}>
           <View style={{ alignItems: 'center', minHeight: 125, justifyContent: 'center' }}>
             {allTypesAreZero ? (
@@ -270,9 +236,19 @@ export function Home({}) {
         </TouchableOpacity>
       </View>
       <SizedBox vertical={2} />
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>{quantidadeTarefas+" Coletas Concluídas"}</Text>
-      </View>
+      {statistics?.collectionsCompleted ? 
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>
+            {statistics.collectionsCompleted + " Coletas Concluídas"}
+          </Text>
+        </View>
+        :
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>
+            {'Carregando...'}
+          </Text>
+        </View>
+      }
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Mapa')}>
           <Text style={styles.text }>Procurar</Text>

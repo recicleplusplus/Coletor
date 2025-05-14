@@ -32,7 +32,7 @@ function TabsRoutes() {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="Inicio"
         component={StackCollection}
         options={{
           title: "Início",
