@@ -236,19 +236,18 @@ export function Home({}) {
         </TouchableOpacity>
       </View>
       <SizedBox vertical={2} />
-      {statistics?.collectionsCompleted ? 
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>
-            {statistics.collectionsCompleted + " Coletas Concluídas"}
-          </Text>
-        </View>
-        :
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>
-            {'Carregando...'}
-          </Text>
-        </View>
-      }
+      {statistics
+  ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>
+        {statistics.collectionsCompleted + " Coletas Concluídas"}
+      </Text>
+    </View>
+  : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ color: Colors[Theme][2], textAlign: 'right', padding: 20, fontWeight: 'bold' }}>
+        {'Carregando...'}
+      </Text>
+    </View>
+}
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Mapa')}>
           <Text style={styles.text }>Procurar</Text>
