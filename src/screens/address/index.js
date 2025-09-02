@@ -28,7 +28,7 @@ export const RegisterAddress = ({data, dispach, closeFunc, idx = -1}) => {
 
     const [head, setHead]                   = useState("Cadastro de Endereço")
     const [error, setError]                 = useState(false);
-    const [loandding, setLoandding]         = useState(false);
+    const [loading, setloading]         = useState(false);
 
     const [titleErr, setTitleErr]           = useState("");
     const [cepErr, setCepErr]               = useState("");
@@ -92,7 +92,7 @@ export const RegisterAddress = ({data, dispach, closeFunc, idx = -1}) => {
     }
     function updateCB(status, err){
         if(status){setError(err)};  
-        setLoandding(false); 
+        setloading(false); 
     }
     function apiCep(){
         const nCep = cep.replace(/[^0-9]/gi, "");
@@ -117,7 +117,7 @@ export const RegisterAddress = ({data, dispach, closeFunc, idx = -1}) => {
     return(
         <View style={Style.default}>
             {error && <Error error={error} closeFunc={()=>setError(false)}/>}
-            {loandding && <Loading/>}
+            {loading && <Loading/>}
 
             <TouchableOpacity style={{...Style.default, ...Style.container}} onPress={closeFunc}></TouchableOpacity>
             <View style={Style.subcontainer}>

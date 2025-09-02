@@ -29,7 +29,7 @@ export function Profile() {
   const [phoneErr, setPhoneErr]    = useState("");
 
   const [error, setError]          = useState(false);
-  const [loandding, setLoandding]  = useState(false);
+  const [loading, setloading]  = useState(false);
   const [register, setResgister]   = useState(false);
   const [index, setIndex]          = useState(-1);
 
@@ -60,7 +60,7 @@ export function Profile() {
     if (!result.canceled) {
       const source = {uri: result.assets[0].uri}
       setImage(source);
-      setLoandding(true);
+      setloading(true);
       coletorDispach({type: Types.LOADIMAGE, uri: source.uri, cb: changeImageCB})
     }
   }
@@ -85,12 +85,12 @@ export function Profile() {
     if(validation()){
       coletorDispach({type: Types.UPDATE, data: {...coletorState, 'name': name, 'phone': phone}, dispatch: coletorDispach, 
                             cb:updateCB});
-      setLoandding(true);
+      setloading(true);
     }
   }
   function updateCB(status, err){
     if(status){setError(err)};  
-    setLoandding(false); 
+    setloading(false); 
     setEditProf(false)
   }
   function validation(){
@@ -131,14 +131,14 @@ export function Profile() {
   }
   function removeAddressCb(status, err){
     if(status){setError(err)};  
-      setLoandding(false); 
+      setloading(false); 
   }
 
   return (
     <View style={Styles.container}>
 
       {error && <Error error={error} closeFunc={()=>setError(false)}/>}
-      {loandding && <Loading/>}
+      {loading && <Loading/>}
       {register && <RegisterAddress data={coletorState} dispach={coletorDispach} closeFunc={() => setResgister(false)} idx={index}/>}
 
       <ScrollView>

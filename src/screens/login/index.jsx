@@ -24,7 +24,7 @@ export function Login() {
 
   const [emailErr, setEmailErr]    = useState("");
   const [passErr, setPassErr]      = useState("");
-  const [loandding, setLoadding]   = useState(false);
+  const [loading, setLoadding]   = useState(false);
   const [error, setError]          = useState(false);
 
   const img = require("../../../assets/images/googleLogo.png");
@@ -71,7 +71,7 @@ export function Login() {
   return (
     <View style={Styles.container}>
       {error && <Error error={error} closeFunc={() => setError(false)}/>}
-      {loandding && <Loading/>}
+      {loading && <Loading/>}
       <ScrollView>
         <ContainerTop/>
         <ContainerData title={"Login"}>
