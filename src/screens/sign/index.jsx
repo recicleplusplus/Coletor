@@ -22,7 +22,7 @@ export function Sign() {
   const {coletorState, coletorDispach} = useContext(ColetorContext)
   const [pass, setPass]            = useState("");
   const [hide, setHide]            = useState(false);
-  const [loandding, setLoadding]   = useState(false);
+  const [loading, setLoadding]   = useState(false);
   const [error, setError]          = useState(false);
 
   const [nameErr, setNameErr]   = useState("");
@@ -87,7 +87,7 @@ export function Sign() {
   return (
     <View style={Styles.container}>
       {error && <Error error={error} closeFunc={() => setError(false)}/>}
-      {loandding && <Loading/>}
+      {loading && <Loading/>}
       <ScrollView>
         <ContainerTop/>
         <ContainerData title={"Cadastro"}>
