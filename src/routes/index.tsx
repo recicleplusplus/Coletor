@@ -1,5 +1,6 @@
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { useContext } from "react";
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import { Colors, Theme } from "../constants/setting";
 import { ColetorContext } from "../contexts/coletor/context";
@@ -20,9 +21,11 @@ function Routes(){
     const {coletorState: {logged}, coletorDispach} = useContext(ColetorContext);
 
     return (
-        <NavigationContainer theme={MyTheme}>
-            {logged ? <TabsRoutes/> : <LogRoutes/>}
-        </NavigationContainer>
+        <PaperProvider>
+            <NavigationContainer theme={MyTheme}>
+                {logged ? <TabsRoutes/> : <LogRoutes/>}
+            </NavigationContainer>
+        </PaperProvider>
     )
 }
 

@@ -14,7 +14,7 @@ import { Error } from "../../components/error";
 import { UPDATEADDRESS, UPDATE } from "../../contexts/coletor/types"
 
 
-export const RegisterAddress = ({data, dispach, closeFunc, idx = -1}) => {
+export const RegisterAddress = ({data, dispach, closeFunc, idx = -1, onSaveCallback = () => {}}) => {
     //const {data, dispach}                   = useContext(DonorContext);
 
     const [title, setTitle]                 = useState("");
@@ -87,12 +87,13 @@ export const RegisterAddress = ({data, dispach, closeFunc, idx = -1}) => {
 
             dispach({type: UPDATEADDRESS, payload: address})
             dispach({type: UPDATE, data: {...data, 'address':address}, dispatch: dispach, cb:updateCB});
-            closeFunc();
+            // closeFunc();
         }
     }
     function updateCB(status, err){
-        if(status){setError(err)};  
         setLoandding(false); 
+        onSaveCallback(status, err); 
+        closeFunc();
     }
     function apiCep(){
         const nCep = cep.replace(/[^0-9]/gi, "");

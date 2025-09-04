@@ -18,6 +18,7 @@ import * as Errors from "../../constants/erros";
 import * as Validation from "../../utils/validation";
 import { RegisterAddress } from "../address";
 import { AddressCard } from "../address/components/card";
+import { Snackbar } from 'react-native-paper';
 
 export function Profile() {
   const {coletorState, coletorDispach} = useContext(ColetorContext)
@@ -35,6 +36,18 @@ export function Profile() {
 
   const basedImage                       = require("../../../assets/images/profile2.webp");
   const [image, setImage]                = useState(basedImage);
+
+  // estados da snack bar
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isSnackbarError, setIsSnackbarError]   = useState(false);
+
+  // mostra/oculta snackbar
+  const showSnackbar = (message, isError = false) => {
+    setSnackbarMessage(message);
+    setIsSnackbarError(isError);
+    setSnackbarVisible(true);
+  };
 
   // UseEffect  functions
   useEffect(()=>{
@@ -130,16 +143,41 @@ export function Profile() {
     coletorDispach({type: Types.UPDATE, data: {...coletorState, 'address':address}, dispatch: coletorDispach, cb:removeAddressCb});
   }
   function removeAddressCb(status, err){
-    if(status){setError(err)};  
-      setLoandding(false); 
+    if(status){
+      setError(err);
+      showSnackbar(err, true); // Mostra snackbar de erro
+    } else {
+      showSnackbar("Endereço removido com sucesso!"); // Mostra snackbar de sucesso
+    };  
+    setLoandding(false); 
+  }
+
+  function onSaveAddressCb(status, err, isEditing) {
+    setResgister(false); // Fecha o modal/tela de registro
+    setLoandding(false);
+
+    if (status) {
+      showSnackbar(err, true); // Erro
+    } else {
+      const message = isEditing 
+        ? "Endereço alterado com sucesso!" 
+        : "Endereço adicionado com sucesso!";
+      showSnackbar(message); // Sucesso
+    }
   }
 
   return (
-    <View style={Styles.container}>
+    <View style={{...Styles.container, flex: 1}}>
 
       {error && <Error error={error} closeFunc={()=>setError(false)}/>}
       {loandding && <Loading/>}
-      {register && <RegisterAddress data={coletorState} dispach={coletorDispach} closeFunc={() => setResgister(false)} idx={index}/>}
+      {register && <RegisterAddress
+                    data={coletorState}
+                    dispach={coletorDispach}
+                    closeFunc={() => setResgister(false)}
+                    idx={index}
+                    onSaveCallback={(status, err) => onSaveAddressCb(status, err, index > -1)}
+                  />}
 
       <ScrollView>
         <ContainerTopClean
@@ -234,6 +272,26 @@ export function Profile() {
         </View>
 
       </ScrollView>
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={7500}
+        style={{
+          backgroundColor: isSnackbarError
+            ? Colors[Theme][8] 
+            : Colors[Theme][9],
+        }}
+        action={{
+          label: 'Fechar',
+          textColor: Colors[Theme][4],
+          onPress: () => {
+            setSnackbarVisible(false);
+          },
+        }}>
+        <Text style={{ color: Colors[Theme][4] }}>
+          {snackbarMessage}
+        </Text>
+      </Snackbar>
     </View>
   );
 }
