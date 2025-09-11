@@ -7,6 +7,7 @@ import { ImageCircleDefault } from "../../../components/images";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { getValidImageUrl } from "../../../utils/getValidImageUrl";
 
 export const AddressCard = ({address, editFn, removeFn}) => {
 
@@ -123,7 +124,7 @@ export const CardHome = ({ tipo, caixas, coleta, endereco, observacao, peso, sac
                   {"Andamento"}.
               </TextIcon>
               <View style={Style.buttonGreey}>
-                <TouchableOpacity style={Style.button2} onPress={() => navigation.navigate('Chat', { userId: id, userPhotoUrl: foto, userName: nome })}>
+                <TouchableOpacity style={Style.button2} onPress={() => navigation.navigate('Chat', { userId: id, userPhotoUrl: getValidImageUrl(foto), userName: nome })}>
                   <MaterialCommunityIcons name="chat" size={25} color="white" />
                   <Text style={Style.text}>Chat</Text>
                 </TouchableOpacity>
@@ -131,7 +132,7 @@ export const CardHome = ({ tipo, caixas, coleta, endereco, observacao, peso, sac
             </View>
             <View>
             <ImageCircleDefault
-             img={{ uri: foto }}
+             img={getValidImageUrl(foto)}
              size={Size50 * 1.5}
            />
            <Text>{nome}</Text>

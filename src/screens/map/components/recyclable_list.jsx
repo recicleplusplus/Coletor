@@ -9,6 +9,7 @@ import * as Linking from "expo-linking";
 import { TokenizaConverterParaKg, TokenizarStringEmIntervalos } from '../../../utils/tokenizefunctions';
 import { ImageCircleDefault } from '../../../components/images';
 import { http } from '../../../utils/serviceOSRM';
+import {getValidImageUrl} from '../../../utils/getValidImageUrl';
 
 export const RecyclableList = ({ datas, collector, closeList, showRecyclable, currentLocation, setLoading, setError}) => {
     const [myRecyclables, setMyRecyclables] = useState([]);
@@ -128,7 +129,10 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
                                 >
                                     <View style={{...Styles.row, justifyContent: "flex-start"}}>
                                         <View style={{alignItems:'center', width:"35%", marginRight: 10}}>
-                                            <ImageCircleDefault img={{uri: collect.item.donor.photoUrl}} size={40} />
+                                            <ImageCircleDefault 
+                                                img={getValidImageUrl(collect.item.donor.photoUrl)} 
+                                                size={40} 
+                                            />
                                             <TextSimple content={collect.item.donor.name} size={Size20*0.7} />
                                         </View>
                                         <View style={{width:"60%", marginRight: 10}}>
