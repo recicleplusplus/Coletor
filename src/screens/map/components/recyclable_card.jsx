@@ -8,6 +8,7 @@ import { Size20 } from "../../../constants/scales";
 import { ButtonDefault } from "../../../components/buttons";
 import { AssociateCollector, DisassociateCollector } from "../../../firebase/providers/recyclable";
 import { set } from "firebase/database";
+import { getValidImageUrl } from "../../../utils/getValidImageUrl";
 
 export const RecyclableCard = ({ data, collector, closeCard, setloading, callbackError}) => {
 
@@ -34,7 +35,10 @@ export const RecyclableCard = ({ data, collector, closeCard, setloading, callbac
 
             <View style={{...Styles.card, ...Styles.cardIndex}}>
                 <View style={Styles.row}>
-                    <ImageCircleDefault img={{uri: data.donor.photoUrl}} size={40} />
+                    <ImageCircleDefault 
+                        img={getValidImageUrl(data.donor.photoUrl)} 
+                        size={40} 
+                    />
                     <TextBold content={data.donor.name} size={Size20}/>
                 </View>
 

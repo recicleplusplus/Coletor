@@ -5,6 +5,7 @@ import { ColetorContext } from "../../contexts/coletor/context";
 import { SizedBox } from 'sizedbox';
 import { styles } from "./style";
 import { useNavigation } from "@react-navigation/native";
+import { getValidImageUrl } from "../../utils/getValidImageUrl";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -84,7 +85,7 @@ export function ChatScreen({ route }) {
     <View style={styles.container}>
       <SizedBox vertical={20} />
       <View style={styles.containerDonorProfile}>
-        <Image source={{ uri: userPhotoUrl }}
+        <Image source={getValidImageUrl(userPhotoUrl)}
           style={styles.donorImage} />
         <Text style={styles.donorName}>{userName}</Text>
       </View>
