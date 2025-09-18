@@ -1,6 +1,5 @@
 import React, { useState, useEffect} from 'react';
 import { View } from 'react-native';
-import { useGetRecyclable } from './hook/useGetRecyclable';
 import { GetRecyclable } from '../../firebase/providers/recyclable';
 import { useGetUserLocation } from './hook/useGetUserLocation';
 import { Loading } from '../../components/loading';
