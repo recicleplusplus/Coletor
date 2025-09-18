@@ -3,14 +3,11 @@ import {  ref, onValue, set, get  } from "firebase/database";
 import { VerifyErroCode } from "../config/errors";
 
 
-export async function GetRecyclable() {
-    try {
-        const recyclableRef = ref(RealTime, "recyclable");
-        const snapshot = await get(recyclableRef);
-        return snapshot.val();
-    } catch (err) {
-        throw new Error(VerifyErroCode(err.code) || 'Erro ao buscar dados dos recicláveis');
-    }
+export function GetRecyclable(setData) {
+    const recyclableRef = ref(RealTime, "recyclable");
+    onValue(recyclableRef, (snapshot) => {
+        setData(snapshot.val());
+    });
 }
 
 export function GetCollectorRecyclable(idCollector, setData) {
