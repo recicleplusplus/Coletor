@@ -1,6 +1,8 @@
-import { RealTime } from "../config/connection";
+import { RealTime, Firestore } from "../config/connection";
 import {  ref, onValue, set, get  } from "firebase/database";
 import { VerifyErroCode } from "../config/errors";
+import { getMaterialsWithCache } from "./materials";
+import { updateDonorPoints } from "./donor";
 
 
 export function GetRecyclable(setData) {
@@ -26,6 +28,12 @@ export async function AssociateCollector (idCollector, idRecyclable, colletorNam
     try{
         await AssociateCollection(idCollector, idRecyclable, time);
 
+        // Busca os dados da coleta para calcular pontos
+        const recyclableRef = ref(RealTime, `recyclable/${idRecyclable}`);
+        const snapshot = await get(recyclableRef);
+        const recyclableData = snapshot.val();
+
+        // Atualiza o status e coletor
         const recyclableCollectorRef2 = ref(RealTime, `recyclable/${idRecyclable}/status`);
         await set(recyclableCollectorRef2, "loading");
 
@@ -34,9 +42,32 @@ export async function AssociateCollector (idCollector, idRecyclable, colletorNam
             'id' : idCollector,
             'name' : colletorName,
             'photoUrl' : collectorPhotoURL
-        })
+        });
+
+        // Calcula e atribui pontos ao doador
+        if (recyclableData && recyclableData.donor && recyclableData.donor.id !== 'none') {
+            const materials = await getMaterialsWithCache();
+            const types = recyclableData.types.split(',');
+            const weight = parseInt(recyclableData.weight) || 0;
+            
+            let totalPoints = 0;
+            types.forEach(type => {
+                const materialKey = type.trim();
+                const material = materials[materialKey];
+                
+                if (material && material.points && material.points.donor) {
+                    const points = material.points.donor * weight;
+                    totalPoints += points;
+                }
+            });
+
+            if (totalPoints > 0) {
+                await updateDonorPoints(recyclableData.donor.id, totalPoints);
+            }
+        }
 
     } catch (err) {
+        console.error('Erro ao associar coleta:', err);
         const error = {
             title: "Falha ao Associar Coleta",
             content: VerifyErroCode(err.code)
