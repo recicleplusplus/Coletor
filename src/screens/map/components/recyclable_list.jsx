@@ -30,7 +30,15 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
                     if (time.inicio < hour && time.fim > hour) {
                         domain = true;
                         setContTime((old) => old + 1);
-                        setKilo((old) => old + TokenizaConverterParaKg(item.weight));
+                        
+                        // Calcula peso total dos materiais
+                        if (item.materials && item.materials.length > 0) {
+                            const totalPeso = item.materials.reduce((sum, mat) => sum + parseFloat(mat.peso || 0), 0);
+                            setKilo((old) => old + totalPeso);
+                        } else {
+                            // Fallback para formato antigo
+                            setKilo((old) => old + TokenizaConverterParaKg(item.weight));
+                        }
                     } 
                 })
                 setMyRecyclables((old) => [...old, {index, item, domain}] );
@@ -153,8 +161,14 @@ export const RecyclableList = ({ datas, collector, closeList, showRecyclable, cu
                                                 {collect.item.address.city}, {collect.item.address.state}.
                                             </TextIcon>
                                             <View style={{alignItems: "center"}}>
-
-                                                <TextSimple content={collect.item.types} size={Size20*0.65} />
+                                                {collect.item.materials && collect.item.materials.length > 0 ? (
+                                                    <TextSimple 
+                                                        content={collect.item.materials.map(m => m.label).join(', ')} 
+                                                        size={Size20*0.65} 
+                                                    />
+                                                ) : (
+                                                    <TextSimple content={collect.item.types} size={Size20*0.65} />
+                                                )}
                                             </View>
                                         </View>
                                     </View>

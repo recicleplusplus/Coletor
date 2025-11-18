@@ -68,36 +68,60 @@ export const RecyclableCard = ({ data, collector, closeCard, setloading, callbac
                         {data.address.street}, {data.address.num} {data.address.complement}.
                     </TextIcon>
 
-                    <View style={{...Styles.row, marginTop:10}}>
-                        <TextIcon
-                            icon={"dropbox"}
-                            color={Colors[Theme][4]}
-                            size={Size20*0.8}
-                            space={5}
-                        >
-                            {data.boxes}
-                        </TextIcon>
-                        <TextIcon
-                            icon={"weight"}
-                            color={Colors[Theme][4]}
-                            size={Size20*0.8}
-                            space={5}
-                        >
-                            {data.bags}
-                        </TextIcon>
-                        <TextIcon
-                            icon={"toolbox-outline"}
-                            color={Colors[Theme][4]}
-                            size={Size20*0.8}
-                            space={5}
-                        >
-                            {data.weight}
-                        </TextIcon>
-                    </View>
+                    {/* Materiais Individuais */}
+                    {data.materials && data.materials.length > 0 ? (
+                        <View style={{marginTop: 15}}>
+                            <TextBold content="Materiais:" size={Size20*0.9}/>
+                            {data.materials.map((material, index) => (
+                                <View key={index} style={{
+                                    backgroundColor: '#f0f0f0',
+                                    padding: 8,
+                                    borderRadius: 6,
+                                    marginTop: 6,
+                                    borderLeftWidth: 3,
+                                    borderLeftColor: Colors[Theme][2]
+                                }}>
+                                    <TextBold content={material.label} size={Size20*0.8}/>
+                                    <TextSimple 
+                                        content={`🛍️ ${material.sacolas} sacolas  •  📦 ${material.caixas} caixas  •  ⚖️ ${material.peso} kg`}
+                                        size={Size20*0.7}
+                                    />
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        // Fallback para formato antigo (compatibilidade)
+                        <View style={{...Styles.row, marginTop:10}}>
+                            <TextIcon
+                                icon={"dropbox"}
+                                color={Colors[Theme][4]}
+                                size={Size20*0.8}
+                                space={5}
+                            >
+                                {data.boxes || 0}
+                            </TextIcon>
+                            <TextIcon
+                                icon={"weight"}
+                                color={Colors[Theme][4]}
+                                size={Size20*0.8}
+                                space={5}
+                            >
+                                {data.bags || 0}
+                            </TextIcon>
+                            <TextIcon
+                                icon={"toolbox-outline"}
+                                color={Colors[Theme][4]}
+                                size={Size20*0.8}
+                                space={5}
+                            >
+                                {data.weight || 0}
+                            </TextIcon>
+                        </View>
+                    )}
                 </View>
 
-                <TextSimple content={data.types}/>
                 <TextSimple content={data.times}/>
+                {data.observation && <TextSimple content={`Obs: ${data.observation}`} size={Size20*0.8}/>}
               
                 <View style={{...Styles.row, marginTop:20}}>
                     <ButtonDefault 

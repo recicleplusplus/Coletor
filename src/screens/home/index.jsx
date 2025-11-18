@@ -63,6 +63,7 @@ export function Home({}) {
               status: collectorInfo.status,
               times: collectorInfo.times,
               types: collectorInfo.types,
+              materials: collectorInfo.materials, // Adiciona novo campo
               weekDays: collectorInfo.weekDays,
               weight: collectorInfo.weight
             };
@@ -86,16 +87,32 @@ export function Home({}) {
   async function getColectorStatistics() {
     const typesWeight = {};
     collectorData.forEach(item => {
-      const typesArray = item.types.split(',').map(type => type.trim());
-      const weight = parseInt(item.weight.match(/\d+/)[0], 10); // Extrai apenas o número da string "5 KG" e converte para inteiro
+      // Novo formato: materials array
+      if (item.materials && Array.isArray(item.materials)) {
+        item.materials.forEach(material => {
+          const type = material.value; // "plastico", "papel", etc
+          const weight = parseFloat(material.peso) || 0;
+          
+          if (typesWeight[type]) {
+            typesWeight[type] += weight;
+          } else {
+            typesWeight[type] = weight;
+          }
+        });
+      } 
+      // Formato antigo: types string e weight total
+      else if (item.types) {
+        const typesArray = item.types.split(',').map(type => type.trim());
+        const weight = parseInt(item.weight.match(/\d+/)[0], 10);
 
-      typesArray.forEach(type => {
-        if (typesWeight[type]) {
-          typesWeight[type] += weight;
-        } else {
-          typesWeight[type] = weight;
-        }
-      });
+        typesArray.forEach(type => {
+          if (typesWeight[type]) {
+            typesWeight[type] += weight;
+          } else {
+            typesWeight[type] = weight;
+          }
+        });
+      }
     });
 
     const statistic = {
@@ -103,7 +120,7 @@ export function Home({}) {
       eletronicKg: typesWeight["eletronico"] || 0,
       glassKg: typesWeight["vidro"] || 0,
       metalKg: typesWeight["metal"] || 0,
-      oilKg: typesWeight["oil"] || 0,
+      oilKg: typesWeight["oleo"] || 0,
       paperKg: typesWeight["papel"] || 0,
       plasticKg: typesWeight["plastico"] || 0
     };
@@ -111,12 +128,24 @@ export function Home({}) {
     return statistic;
   }
 
-  const quantidadeTypesA = collectorData.filter((tarefa) => tarefa.types.includes('Plástico')).length;
-  const quantidadeTypesB = collectorData.filter((tarefa) => tarefa.types.includes('Metal')).length;
-  const quantidadeTypesC = collectorData.filter((tarefa) => tarefa.types.includes('Eletrônico')).length;
-  const quantidadeTypesD = collectorData.filter((tarefa) => tarefa.types.includes('Papel')).length;
-  const quantidadeTypesE = collectorData.filter((tarefa) => tarefa.types.includes('Óleo')).length;
-  const quantidadeTypesF = collectorData.filter((tarefa) => tarefa.types.includes('Vidro')).length;
+  const getMaterialTypes = (tarefa, materialName) => {
+    // Novo formato: materials array
+    if (tarefa.materials && Array.isArray(tarefa.materials)) {
+      return tarefa.materials.some(m => m.label === materialName);
+    }
+    // Formato antigo: types string
+    if (tarefa.types) {
+      return tarefa.types.includes(materialName);
+    }
+    return false;
+  };
+
+  const quantidadeTypesA = collectorData.filter((tarefa) => getMaterialTypes(tarefa, 'Plástico')).length;
+  const quantidadeTypesB = collectorData.filter((tarefa) => getMaterialTypes(tarefa, 'Metal')).length;
+  const quantidadeTypesC = collectorData.filter((tarefa) => getMaterialTypes(tarefa, 'Eletrônico')).length;
+  const quantidadeTypesD = collectorData.filter((tarefa) => getMaterialTypes(tarefa, 'Papel')).length;
+  const quantidadeTypesE = collectorData.filter((tarefa) => getMaterialTypes(tarefa, 'Óleo')).length;
+  const quantidadeTypesF = collectorData.filter((tarefa) => getMaterialTypes(tarefa, 'Vidro')).length;
   const allTypesAreZero = [quantidadeTypesA, quantidadeTypesB, quantidadeTypesC, quantidadeTypesD, quantidadeTypesE, quantidadeTypesF].every(
     (quantity) => quantity === 0
   );

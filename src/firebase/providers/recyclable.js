@@ -47,19 +47,37 @@ export async function AssociateCollector (idCollector, idRecyclable, colletorNam
         // Calcula e atribui pontos ao doador
         if (recyclableData && recyclableData.donor && recyclableData.donor.id !== 'none') {
             const materials = await getMaterialsWithCache();
-            const types = recyclableData.types.split(',');
-            const weight = parseInt(recyclableData.weight) || 0;
             
             let totalPoints = 0;
-            types.forEach(type => {
-                const materialKey = type.trim();
-                const material = materials[materialKey];
+            
+            // Novo formato: array de materiais com pesos individuais
+            if (recyclableData.materials && Array.isArray(recyclableData.materials)) {
+                recyclableData.materials.forEach(material => {
+                    const materialKey = material.value; // ex: "plastico", "papel"
+                    const materialWeight = parseFloat(material.peso) || 0;
+                    const materialData = materials[materialKey];
+                    
+                    if (materialData && materialData.points && materialData.points.donor) {
+                        const points = materialData.points.donor * materialWeight;
+                        totalPoints += points;
+                    }
+                });
+            } 
+            // Fallback: formato antigo com types e weight total
+            else if (recyclableData.types) {
+                const types = recyclableData.types.split(',');
+                const weight = parseInt(recyclableData.weight) || 0;
                 
-                if (material && material.points && material.points.donor) {
-                    const points = material.points.donor * weight;
-                    totalPoints += points;
-                }
-            });
+                types.forEach(type => {
+                    const materialKey = type.trim();
+                    const material = materials[materialKey];
+                    
+                    if (material && material.points && material.points.donor) {
+                        const points = material.points.donor * weight;
+                        totalPoints += points;
+                    }
+                });
+            }
 
             if (totalPoints > 0) {
                 await updateDonorPoints(recyclableData.donor.id, totalPoints);

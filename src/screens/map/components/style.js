@@ -24,7 +24,7 @@ export const Styles = StyleSheet.create({
     },
     content:{
         width: "100%",
-        padding: 20,
+        padding: 10,
         alignItems: "justify",
     },
     card: {
@@ -34,7 +34,7 @@ export const Styles = StyleSheet.create({
         backgroundColor: Colors[Theme][1],
         alignSelf: "center",
         borderRadius: 10,
-        padding: 20,
+        padding: 15,
         alignItems: "center"
     },
     row: {
